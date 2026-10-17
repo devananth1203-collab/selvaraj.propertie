@@ -1,0 +1,1264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selvaraj Properties - Find Lands & Houses</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Header / Navbar */
+        header {
+            background-color: #0b2545;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .logo svg {
+            display: block;
+            width: auto;
+            height: 50px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: #134074;
+        }
+
+        .admin-btn {
+            background-color: #ffb703;
+            color: #0b2545;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .admin-btn:hover {
+            background-color: #e5a402;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Banner with Search */
+        .hero {
+            background: linear-gradient(rgba(11,37,69,0.8), rgba(11,37,69,0.8)), 
+                        url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80') center/cover;
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+        }
+
+        .search-box {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .search-box button {
+            background: #ffb703;
+            border: none;
+            padding: 0 25px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #0b2545;
+        }
+
+        /* Section Header & Filters */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e5e5e5;
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-buttons button {
+            padding: 8px 18px;
+            margin-left: 5px;
+            border: 1px solid #0b2545;
+            background: white;
+            color: #0b2545;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-buttons button.active, .filter-buttons button:hover {
+            background: #0b2545;
+            color: white;
+        }
+
+        /* Property Grid */
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .property-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #0b2545;
+            color: white;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .property-img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            background: #eee;
+        }
+
+        .details-main-image {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #eee;
+        }
+
+        .property-gallery-thumbnails {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            padding: 2px 0 8px;
+        }
+
+        .gallery-thumbnail {
+            flex: 0 0 72px;
+            height: 58px;
+            padding: 2px;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .gallery-thumbnail.active {
+            border-color: #ffb703;
+        }
+
+        .gallery-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+
+        .property-info {
+            padding: 18px;
+        }
+
+        .property-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #111;
+        }
+
+        .property-city {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .property-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+
+        .property-price {
+            font-size: 18px;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .view-details-btn {
+            background: #134074;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: #d90429;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            background-color: #0b2545;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #134074;
+        }
+
+        /* Footer */
+        footer {
+            background: #0b2545;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 900px) {
+            header {
+                padding: 12px 20px;
+                gap: 12px;
+            }
+
+            nav ul {
+                gap: 4px;
+            }
+
+            nav a {
+                padding: 8px 10px;
+            }
+
+            .property-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                padding: 10px 14px;
+                gap: 8px 10px;
+            }
+
+            .logo svg {
+                height: 40px;
+            }
+
+            header > .admin-btn {
+                grid-column: 2;
+                grid-row: 1;
+                width: auto;
+                white-space: nowrap;
+            }
+
+            header nav {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                width: 100%;
+            }
+
+            nav ul {
+                justify-content: space-between;
+                gap: 2px;
+            }
+
+            nav li {
+                flex: 1;
+                min-width: 0;
+                text-align: center;
+            }
+
+            nav a {
+                display: block;
+                padding: 8px 4px;
+                font-size: 14px;
+            }
+
+            .admin-btn {
+                padding: 9px 12px;
+                font-size: 13px;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 0 14px;
+            }
+
+            .hero {
+                padding: 42px 16px;
+                border-radius: 10px;
+            }
+
+            .hero h1 {
+                font-size: clamp(25px, 7vw, 34px);
+                line-height: 1.2;
+            }
+
+            .hero p {
+                font-size: 15px;
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }
+
+            .search-box {
+                flex-direction: column;
+                border-radius: 12px;
+            }
+
+            .search-box input {
+                min-width: 0;
+                padding: 13px 15px;
+                font-size: 16px;
+            }
+
+            .search-box button {
+                padding: 12px;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                margin-bottom: 18px;
+                gap: 12px;
+            }
+
+            .section-header h2 {
+                font-size: 21px;
+            }
+
+            .filter-buttons {
+                display: flex;
+                width: 100%;
+                gap: 8px;
+            }
+
+            .filter-buttons button {
+                flex: 1;
+                margin: 0;
+                padding: 8px 10px;
+            }
+
+            .property-grid {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 16px;
+            }
+
+            .property-img {
+                height: 210px;
+            }
+
+            .modal {
+                padding: 10px;
+                align-items: center;
+            }
+
+            .modal-content {
+                padding: 24px 18px;
+                max-height: 94vh;
+            }
+
+            .details-main-image {
+                height: clamp(180px, 58vw, 260px);
+            }
+
+            footer {
+                padding: 26px 16px;
+                margin-top: 40px;
+                overflow-wrap: anywhere;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo svg {
+                height: 34px;
+            }
+
+            nav a {
+                font-size: 13px;
+            }
+
+            .admin-btn {
+                padding: 8px 9px;
+            }
+        }
+
+        body {
+            background: #f5f6f8;
+            color: #242936;
+        }
+
+        header {
+            background: #fff;
+            color: #242936;
+            box-shadow: 0 2px 12px rgba(25, 35, 55, 0.08);
+        }
+
+        nav a {
+            color: #3d4552;
+        }
+
+        nav a:hover, nav a.active {
+            background: #fff0f0;
+            color: #df3038;
+        }
+
+        .admin-btn, .search-box button {
+            background: #df3038;
+            color: #fff;
+        }
+
+        .admin-btn:hover, .search-box button:hover {
+            background: #c9252d;
+        }
+
+        .hero {
+            border-radius: 10px;
+        }
+
+        .search-box {
+            border-radius: 8px;
+        }
+
+        .search-box button {
+            min-height: 48px;
+        }
+
+        .section-header {
+            border-bottom-color: #e3e6eb;
+        }
+
+        .filter-buttons button {
+            border-color: #df3038;
+            color: #df3038;
+        }
+
+        .filter-buttons button.active, .filter-buttons button:hover {
+            background: #df3038;
+            color: #fff;
+        }
+
+        .property-card {
+            border: 1px solid #e8eaf0;
+            border-radius: 8px;
+            box-shadow: 0 3px 12px rgba(25, 35, 55, 0.06);
+        }
+
+        .property-badge {
+            background: #df3038;
+        }
+
+        .property-title {
+            color: #242936;
+        }
+
+        .view-details-btn, .submit-btn {
+            background: #df3038;
+        }
+
+        .view-details-btn:hover, .submit-btn:hover {
+            background: #c9252d;
+        }
+
+        .delete-btn {
+            background: #596273;
+        }
+
+        .delete-btn:hover {
+            background: #343b48;
+        }
+
+        .image-count {
+            display: block;
+            margin-top: 6px;
+            color: #687182;
+            font-size: 12px;
+        }
+
+        footer {
+            background: #252b36;
+        }
+
+        button, a, input, select, textarea {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus-visible, a:focus-visible, input:focus-visible,
+        select:focus-visible, textarea:focus-visible {
+            outline: 3px solid rgba(223, 48, 56, 0.35);
+            outline-offset: 2px;
+        }
+
+        .container {
+            width: min(100% - 40px, 1200px);
+            padding: 0;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.15;
+        }
+
+        .hero p {
+            line-height: 1.5;
+        }
+
+        .filter-buttons button, .view-details-btn, .delete-btn,
+        .admin-btn, .submit-btn {
+            min-height: 44px;
+        }
+
+        .view-details-btn {
+            padding: 8px 14px;
+        }
+
+        .property-info {
+            padding: 18px;
+        }
+
+        .property-title {
+            line-height: 1.35;
+        }
+
+        @media (max-width: 800px) {
+            header {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                padding: 10px 20px;
+                gap: 8px 16px;
+            }
+
+            header .logo {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            header nav {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                width: 100%;
+            }
+
+            header nav ul {
+                justify-content: center;
+                gap: clamp(4px, 2vw, 18px);
+            }
+
+            header nav a {
+                display: block;
+                min-height: 44px;
+                padding: 12px clamp(8px, 2vw, 16px);
+            }
+
+            header > .admin-btn {
+                grid-column: 2;
+                grid-row: 1;
+                min-height: 44px;
+                white-space: nowrap;
+            }
+
+            .container {
+                width: min(100% - 32px, 720px);
+                margin: 24px auto;
+            }
+
+            .hero {
+                padding: clamp(36px, 7vw, 56px) 20px;
+            }
+
+            .property-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 540px) {
+            header {
+                padding: 8px 12px;
+                gap: 6px 8px;
+            }
+
+            header .logo svg {
+                height: 36px;
+            }
+
+            header > .admin-btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            header nav ul {
+                justify-content: space-between;
+                gap: 2px;
+            }
+
+            header nav li {
+                flex: 1;
+                min-width: 0;
+                text-align: center;
+            }
+
+            header nav a {
+                padding: 10px 3px;
+                font-size: 13px;
+            }
+
+            .container {
+                width: calc(100% - 24px);
+                margin: 16px auto;
+            }
+
+            .hero {
+                padding: 34px 16px;
+                margin-bottom: 24px;
+            }
+
+            .hero h1 {
+                font-size: clamp(26px, 8vw, 34px);
+            }
+
+            .search-box {
+                flex-direction: column;
+                border-radius: 10px;
+            }
+
+            .search-box input {
+                width: 100%;
+                min-height: 48px;
+                padding: 12px 14px;
+                font-size: 16px;
+            }
+
+            .search-box button {
+                width: 100%;
+                min-height: 46px;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 18px;
+            }
+
+            .section-header h2 {
+                font-size: 21px;
+            }
+
+            .filter-buttons {
+                display: flex;
+                width: 100%;
+                gap: 8px;
+            }
+
+            .filter-buttons button {
+                flex: 1;
+                margin: 0;
+                padding: 8px;
+            }
+
+            .property-grid {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 14px;
+            }
+
+            .property-img {
+                height: clamp(190px, 58vw, 260px);
+            }
+
+            .property-footer {
+                gap: 8px;
+            }
+
+            .property-price {
+                font-size: 16px;
+            }
+
+            .modal {
+                padding: 8px;
+            }
+
+            .modal-content {
+                padding: 24px 16px;
+                max-height: 94dvh;
+            }
+
+            .form-group input, .form-group select, .form-group textarea {
+                min-height: 44px;
+                font-size: 16px;
+            }
+
+            .details-main-image {
+                height: clamp(180px, 58vw, 260px);
+            }
+
+            footer {
+                padding: 26px 16px;
+                margin-top: 36px;
+                overflow-wrap: anywhere;
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header>
+        <div class="logo" role="img" aria-label="Selvaraj Real Estate logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="35" fill="none" stroke="#df3038" stroke-width="3"/>
+                <path d="M30 55 L50 30 L70 55 H62 V70 H38 V55 Z" fill="#0b2545" stroke="#df3038" stroke-width="3"/>
+                <text x="50" y="22" font-family="sans-serif" font-size="9" font-weight="bold" fill="#df3038" text-anchor="middle">N</text>
+                <text x="50" y="83" font-family="sans-serif" font-size="9" font-weight="bold" fill="#df3038" text-anchor="middle">S</text>
+                <text x="80" y="53" font-family="sans-serif" font-size="9" font-weight="bold" fill="#df3038" text-anchor="middle">E</text>
+                <text x="20" y="53" font-family="sans-serif" font-size="9" font-weight="bold" fill="#df3038" text-anchor="middle">W</text>
+                <text x="100" y="48" font-family="'Segoe UI', sans-serif" font-size="28" font-weight="800" fill="#0b2545">SELVARAJ</text>
+                <text x="101" y="72" font-family="'Segoe UI', sans-serif" font-size="15" font-weight="600" fill="#df3038" letter-spacing="3">REAL ESTATE</text>
+            </svg>
+        </div>
+        <nav>
+            <ul>
+                <li><a onclick="filterCategory('All')" id="nav-home" class="active">Home</a></li>
+                <li><a onclick="filterCategory('Land')" id="nav-land">Land</a></li>
+                <li><a onclick="filterCategory('House')" id="nav-house">House</a></li>
+                <li><a onclick="scrollToContact()">Contact</a></li>
+            </ul>
+        </nav>
+        <button class="admin-btn" id="admin-action" onclick="openAdminLogin()">Admin Panel</button>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Banner & Search -->
+        <div class="hero">
+            <h1>Find a place to call your own</h1>
+            <p>Browse land and homes directly—without brokerage.</p>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by city (e.g. Coimbatore, Madurai)..." oninput="handleSearch()">
+                <button onclick="handleSearch()">Search</button>
+            </div>
+        </div>
+
+        <!-- Section Header -->
+        <div class="section-header">
+            <h2 id="section-title">All Properties</h2>
+            <div class="filter-buttons">
+                <button onclick="filterCategory('All')" id="btn-all" class="active">All</button>
+                <button onclick="filterCategory('Land')" id="btn-land">Land</button>
+                <button onclick="filterCategory('House')" id="btn-house">House</button>
+            </div>
+        </div>
+
+        <!-- Property Grid -->
+        <div class="property-grid" id="property-list">
+            <!-- Dynamically Rendered Cards -->
+        </div>
+    </div>
+
+    <!-- Contact Footer -->
+    <footer id="contact-section">
+        <h3>Selvaraj Properties Office</h3>
+        <p style="margin-top: 8px;">Phone / WhatsApp: <a href="tel:+919976415550" style="color:inherit;">+91 99764 15550</a> | Email: contact@selvarajproperties.com</p>
+        <p style="margin-top: 5px; font-size: 13px; color: #b0c4de;">&copy; 2026 Selvaraj Properties. All rights reserved.</p>
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+            <h2 style="margin-bottom: 20px; color: #0b2545;">Admin Login</h2>
+            <div class="form-group">
+                <label>Enter Admin Password:</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            </div>
+            <button class="submit-btn" onclick="verifyPassword()">Login</button>
+        </div>
+    </div>
+
+    <!-- Add Property Modal (Admin) -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('adminModal')">&times;</span>
+            <h2 style="margin-bottom: 20px; color: #0b2545;">+ Add New Property</h2>
+            <form id="addPropertyForm" onsubmit="handleAddProperty(event)">
+                <div class="form-group">
+                    <label>Property Title:</label>
+                    <input type="text" id="propTitle" placeholder="e.g., 2 Acres Agricultural Plot / 3BHK House" required>
+                </div>
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="propCategory" required>
+                        <option value="Land">Land</option>
+                        <option value="House">House</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>City / Location:</label>
+                    <input type="text" id="propCity" placeholder="e.g., Coimbatore" required>
+                </div>
+                <div class="form-group">
+                    <label>Price:</label>
+                    <input type="text" id="propPrice" placeholder="e.g., ₹45 Lakhs" required>
+                </div>
+                <div class="form-group">
+                    <label for="propImageFile">Property photos (up to 5):</label>
+                    <input type="file" id="propImageFile" accept="image/*" multiple onchange="updateImageCount()">
+                    <small class="image-count" id="image-count">0 of 5 images selected</small>
+                </div>
+                <div class="form-group">
+                    <label for="propImageUrl">Or add image URLs (one per line):</label>
+                    <textarea id="propImageUrl" rows="3" placeholder="https://example.com/front.jpg&#10;https://example.com/interior.jpg" oninput="updateImageCount()"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Publish Property</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Property Details Modal (Viewer view) -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content" id="detailsModalContent">
+            <!-- Populated dynamically -->
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const defaultProperties = [
+            {
+                id: 1,
+                title: "Prime Agricultural Land (2 Acres)",
+                category: "Land",
+                city: "Coimbatore",
+                price: "₹35 Lakhs",
+                image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 2,
+                title: "3 BHK Luxury Independent Villa",
+                category: "House",
+                city: "Coimbatore",
+                price: "₹85 Lakhs",
+                image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 3,
+                title: "Commercial Plot Near Main Road",
+                category: "Land",
+                city: "Madurai",
+                price: "₹60 Lakhs",
+                image: "https://images.unsplash.com/photo-1628624747186-a941c476b7ef?auto=format&fit=crop&w=600&q=80"
+            }
+        ];
+
+        let properties = JSON.parse(localStorage.getItem('selvaraj_properties')) || defaultProperties;
+        let isAdminLoggedIn = false;
+        let currentFilter = 'All';
+        let searchQuery = '';
+        let currentGalleryImages = [];
+
+        function getPropertyImages(property) {
+            const images = Array.isArray(property.images)
+                ? property.images.filter(image => typeof image === 'string' && image.trim() !== '').slice(0, 5)
+                : [];
+            return images.length ? images : (property.image ? [property.image] : []);
+        }
+
+        function updateImageCount() {
+            const fileCount = document.getElementById('propImageFile').files.length;
+            const urlCount = document.getElementById('propImageUrl').value
+                .split(/\r?\n/)
+                .map(url => url.trim())
+                .filter(Boolean).length;
+            const total = fileCount + urlCount;
+            const counter = document.getElementById('image-count');
+            counter.textContent = `${total} of 5 images selected`;
+            counter.style.color = total > 5 ? '#d90429' : '';
+        }
+
+        function renderProperties() {
+            const listContainer = document.getElementById('property-list');
+            listContainer.innerHTML = '';
+
+            let filtered = currentFilter === 'All' 
+                ? properties 
+                : properties.filter(p => p.category === currentFilter);
+
+            if (searchQuery.trim() !== '') {
+                filtered = filtered.filter(p => 
+                    p.city.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    p.title.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #777; padding: 40px; font-size: 16px;">No properties found matching your search.</p>`;
+                return;
+            }
+
+            filtered.forEach(prop => {
+                const coverImage = getPropertyImages(prop)[0] || 'https://via.placeholder.com/300x190?text=Selvaraj+Properties';
+                const card = document.createElement('div');
+                card.className = 'property-card';
+                card.innerHTML = `
+                    <span class="property-badge">${prop.category}</span>
+                    <img src="${coverImage}" alt="${prop.title}" class="property-img" onerror="this.src='https://via.placeholder.com/300x190?text=Selvaraj+Properties'">
+                    <div class="property-info" onclick="openDetails(${prop.id})">
+                        <div class="property-title">${prop.title}</div>
+                        <div class="property-city">📍 ${prop.city}</div>
+                        <div class="property-footer">
+                            <span class="property-price">${prop.price}</span>
+                            <button class="view-details-btn">View Details</button>
+                        </div>
+                    </div>
+                    ${isAdminLoggedIn ? `<div style="padding: 0 18px 15px;"><button class="delete-btn" onclick="deleteProperty(${prop.id})">Remove Listing</button></div>` : ''}
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function filterCategory(category) {
+            currentFilter = category;
+            document.getElementById('section-title').innerText = category === 'All' ? 'All Properties' : `${category} Listings`;
+
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            if (category === 'All') document.getElementById('nav-home').classList.add('active');
+            if (category === 'Land') document.getElementById('nav-land').classList.add('active');
+            if (category === 'House') document.getElementById('nav-house').classList.add('active');
+
+            document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
+            if (category === 'All') document.getElementById('btn-all').classList.add('active');
+            if (category === 'Land') document.getElementById('btn-land').classList.add('active');
+            if (category === 'House') document.getElementById('btn-house').classList.add('active');
+
+            renderProperties();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value;
+            renderProperties();
+        }
+
+        function openAdminLogin() {
+            if (isAdminLoggedIn) {
+                document.getElementById('adminModal').style.display = 'flex';
+            } else {
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        }
+
+        function verifyPassword() {
+            const pwd = document.getElementById('adminPassword').value;
+            if (pwd === "Selvaraj@9976!") {
+                isAdminLoggedIn = true;
+                closeModal('loginModal');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('admin-action').textContent = '+ Add property';
+                document.getElementById('adminModal').style.display = 'flex';
+                renderProperties();
+            } else {
+                alert("Incorrect password. Please try again.");
+            }
+        }
+
+        function handleAddProperty(e) {
+            e.preventDefault();
+            if (!isAdminLoggedIn) {
+                alert("Please log in as an admin to add a property.");
+                return;
+            }
+            const title = document.getElementById('propTitle').value;
+            const category = document.getElementById('propCategory').value;
+            const city = document.getElementById('propCity').value;
+            const price = document.getElementById('propPrice').value;
+            const imageUrls = document.getElementById('propImageUrl').value
+                .split(/\r?\n/)
+                .map(url => url.trim())
+                .filter(Boolean);
+            const imageFiles = Array.from(document.getElementById('propImageFile').files || []);
+
+            if (imageFiles.length + imageUrls.length > 5) {
+                alert("Please choose no more than 5 images for one property.");
+                return;
+            }
+
+            if (imageFiles.length === 0 && imageUrls.length === 0) {
+                alert("Please upload at least one image or provide an image URL.");
+                return;
+            }
+
+            Promise.all(imageFiles.map(file => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error || new Error(`Could not read ${file.name}.`));
+                reader.readAsDataURL(file);
+            })))
+                .then(uploadedImages => saveNewProperty(title, category, city, price, [...uploadedImages, ...imageUrls]))
+                .catch(error => {
+                    console.error("Unable to read property images:", error);
+                    alert("One or more images could not be read. Please try again.");
+                });
+        }
+
+        function saveNewProperty(title, category, city, price, images) {
+            if (!isAdminLoggedIn) {
+                alert("Please log in as an admin to add a property.");
+                return;
+            }
+            if (images.length > 5) {
+                alert("Please choose no more than 5 images for one property.");
+                return;
+            }
+
+            const newProp = {
+                id: Date.now(),
+                title,
+                category,
+                city,
+                price,
+                images,
+                image: images[0]
+            };
+
+            properties.unshift(newProp);
+            localStorage.setItem('selvaraj_properties', JSON.stringify(properties));
+            
+            document.getElementById('addPropertyForm').reset();
+            updateImageCount();
+            closeModal('adminModal');
+            renderProperties();
+            alert("Property successfully added to your website!");
+        }
+
+        function deleteProperty(id) {
+            if (!isAdminLoggedIn) return;
+
+            const property = properties.find(p => p.id === id);
+            if (!property) return;
+
+            if (confirm(`Remove "${property.title}" from the property listings?`)) {
+                properties = properties.filter(p => p.id !== id);
+                localStorage.setItem('selvaraj_properties', JSON.stringify(properties));
+                renderProperties();
+            }
+        }
+
+        function openDetails(id) {
+            const prop = properties.find(p => p.id === id);
+            if (!prop) return;
+
+            currentGalleryImages = getPropertyImages(prop);
+            const thumbnails = currentGalleryImages.length > 1
+                ? `<div class="property-gallery-thumbnails">${currentGalleryImages.map((image, index) => `
+                    <button type="button" class="gallery-thumbnail${index === 0 ? ' active' : ''}" onclick="showPropertyImage(${index})" aria-label="View property image ${index + 1}">
+                        <img src="${image}" alt="${prop.title} image ${index + 1}">
+                    </button>
+                `).join('')}</div>`
+                : '';
+            const modalContent = document.getElementById('detailsModalContent');
+            modalContent.innerHTML = `
+                <span class="close-btn" onclick="closeModal('detailsModal')">&times;</span>
+                <img id="details-main-image" src="${currentGalleryImages[0] || 'https://via.placeholder.com/300x190?text=Selvaraj+Properties'}" alt="${prop.title}" class="details-main-image">
+                ${thumbnails}
+                <span style="background:#0b2545; color:white; padding:4px 10px; font-size:11px; font-weight:bold; border-radius:4px; text-transform:uppercase;">${prop.category}</span>
+                <h2 style="margin: 10px 0 5px 0; color:#0b2545;">${prop.title}</h2>
+                <p style="color:#666; margin-bottom:10px;">📍 Location: <strong>${prop.city}</strong></p>
+                <h3 style="color:#2e7d32; margin-bottom:20px;">Price: ${prop.price}</h3>
+                <a href="https://api.whatsapp.com/send?phone=919976415550&text=${encodeURIComponent(`Hi Selvaraj Properties, I am interested in ${prop.title}.`)}" target="_blank" rel="noopener noreferrer" style="display:block; background:#25d366; color:white; text-align:center; padding:12px; border-radius:5px; text-decoration:none; font-weight:bold; margin-bottom:10px;">Contact Selvaraj Properties via WhatsApp</a>
+                <a href="tel:+919976415550" style="display:block; background:#df3038; color:white; text-align:center; padding:12px; border-radius:5px; text-decoration:none; font-weight:bold;">Call Selvaraj Properties: +91 99764 15550</a>
+            `;
+            document.getElementById('detailsModal').style.display = 'flex';
+        }
+
+        function showPropertyImage(index) {
+            if (index < 0 || index >= currentGalleryImages.length) return;
+
+            const mainImage = document.getElementById('details-main-image');
+            if (!mainImage) return;
+            mainImage.src = currentGalleryImages[index];
+
+            document.querySelectorAll('.gallery-thumbnail').forEach((thumbnail, thumbnailIndex) => {
+                thumbnail.classList.toggle('active', thumbnailIndex === index);
+            });
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function scrollToContact() {
+            document.getElementById('contact-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initial Load
+        updateImageCount();
+        renderProperties();
+    </script>
+</body>
+</html>
